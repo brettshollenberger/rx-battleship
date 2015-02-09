@@ -1,57 +1,64 @@
-require "faye/websocket"
 require "json"
 
 class BattleshipApp
   class SocketMiddleware
     KEEPALIVE_TIME = 15
 
+    class << self
+      attr_accessor :clients
+    end
+
+    @clients = {} 
+
     def initialize(app)
       @app = app
     end
 
-    def is_websocket_request?(env)
-      websocket_class.websocket?(env)
-    end
-
     def call(env)
-      if is_websocket_request?(env)
-        ws = websocket_class.new(env, nil, {ping: KEEPALIVE_TIME})
-
-        ws.on :open do
-          print "socket opened"
-          SocketMiddleware.clients << ws
-
-          ws.send RoomsController.index
-        end
-
-        ws.on :message do |event|
-          p [:message, event.data]
-
-          request     = JSON.parse(event.data)
-          method      = request["headers"]["method"]
-          url         = request["headers"]["url"]
-          body        = RecursiveOpenStruct.new(request["body"])
-          body.socket = ws
-
-          route = SocketRouter.route(method, url)
-
-          ws.send(route.controller.send(route.action, body))
-        end
-
-        ws.on :close do |event|
-          p [:close]
-          @clients.delete(ws)
-        end
-
-        ws.rack_response
+      if Websocket.websocket?(env)
+        initialize_socket(env).rack_response
       else
         @app.call(env)
       end
     end
 
-  private
-    def websocket_class
-      Faye::WebSocket
+    def initialize_socket(env={})
+      ws = Websocket.new(env, nil, {ping: KEEPALIVE_TIME})
+
+      ws.on :open, &on_open(ws)
+      ws.on :message, &on_message(ws)
+      ws.on :close, &on_close(ws)
+
+      return ws
+    end
+
+    def on_open(ws)
+      proc do
+        p "socket opened"
+      end
+    end
+
+    def on_message(ws)
+      proc do |event|
+        p [:message, event.data]
+
+        request     = JSON.parse(event.data)
+        method      = request["headers"]["method"]
+        url         = request["headers"]["url"]
+        body        = RecursiveOpenStruct.new(request["body"])
+        body.socket = ws
+
+        route = Router.route(method, url)
+
+        ws.send(route.controller.send(route.action, body))
+      end
+    end
+
+    def on_close(ws)
+      proc do |event|
+        p [:close]
+        @clients.delete(ws)
+      end
     end
   end
 end
