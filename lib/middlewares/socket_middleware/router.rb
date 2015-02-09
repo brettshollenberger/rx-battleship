@@ -12,17 +12,51 @@ class BattleshipApp
       %w(get post put delete).each do |method|
         define_singleton_method method do |options|
           options.each do |k, v|
-            @routes[{:method => method.to_sym, :url => k}] = v
+            @routes[{:request_method => method.to_sym, :url => k}] = v
           end
         end
       end
 
       def self.route(request)
-        request = Request.new(request)
-        route   = OpenStruct.new @routes[{:method => request.method.downcase.to_sym, 
-                                          :url    => request.url}]
+        begin
+          request = Request.new(request)
+          route   = OpenStruct.new @routes[{:request_method => request.method.downcase.to_sym, 
+                                            :url => request.url}]
+        rescue Request::UnprocessableEntityError
+          return socket_error request, :unprocessable_entity_error
+        end
 
-        route.controller.send(route.action, request.body)
+        if route.nil?
+          return socket_error request, :not_found_error
+        else
+          return socket_response request, route.controller.send(route.action, request.body)
+        end
+      end
+
+    private
+      def self.socket_response(request, body)
+        method = request.respond_to?(:request_method) ? request.method : :unprocessable
+        url    = request.respond_to?(:url) ? request.url : :unprocessable
+
+        JSON.generate({
+          headers: {
+            method: method,
+            url: url
+          },
+          body: body
+        })
+      end
+      
+      def self.socket_error(request, error_name)
+        socket_response request, send(error_name)
+      end
+
+      def self.unprocessable_entity_error
+        { :status => 422, :message => "Unprocessable entity" }
+      end
+
+      def self.not_found_error
+        { :status => 404, :message => "Not found" }
       end
     end
   end

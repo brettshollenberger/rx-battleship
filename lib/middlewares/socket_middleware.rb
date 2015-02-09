@@ -4,13 +4,8 @@ class BattleshipApp
   class SocketMiddleware
     KEEPALIVE_TIME = 15
 
-    class << self
-      attr_accessor :clients
-    end
-
-    @clients = {} 
-
-    def initialize(app)
+    def initialize(app, &block)
+      instance_eval(&block)
       @app = app
     end
 
@@ -22,42 +17,47 @@ class BattleshipApp
       end
     end
 
+  private
     def initialize_socket(env={})
       ws = Websocket.new(env, nil, {ping: KEEPALIVE_TIME})
 
-      ws.on :open, &on_open(ws)
-      ws.on :message, &on_message(ws)
-      ws.on :close, &on_close(ws)
+      ws.on :open, &__on_open__(ws)
+      ws.on :message, &__on_message__(ws)
+      ws.on :close, &__on_close__(ws)
 
       return ws
     end
 
     def on_open(ws)
-      proc do
-        p "socket opened"
-      end
     end
 
-    def on_message(ws)
-      proc do |event|
-        p [:message, event.data]
-
-        request     = JSON.parse(event.data)
-        method      = request["headers"]["method"]
-        url         = request["headers"]["url"]
-        body        = RecursiveOpenStruct.new(request["body"])
-        body.socket = ws
-
-        route = Router.route(method, url)
-
-        ws.send(route.controller.send(route.action, body))
-      end
+    def on_message(ws, event)
     end
 
     def on_close(ws)
+    end
+
+    def __on_open__(ws)
+      proc do
+        p "socket opened"
+        on_open(ws)
+      end
+    end
+
+    def __on_message__(ws)
+      proc do |event|
+        p [:message, event.data]
+
+        ws.send Router.route(event.data)
+
+        on_message(ws, event)
+      end
+    end
+
+    def __on_close__(ws)
       proc do |event|
         p [:close]
-        @clients.delete(ws)
+        on_close(ws)
       end
     end
   end

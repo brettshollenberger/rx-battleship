@@ -1,6 +1,8 @@
 class BattleshipApp
   class SocketMiddleware
     class Request
+      class UnprocessableEntityError < StandardError; end
+
       attr_accessor :request
 
       def initialize(request={})
@@ -8,7 +10,11 @@ class BattleshipApp
           request = request.to_json
         end
 
-        @request = ROpenStruct.new(JSON.parse(request))
+        begin
+          @request = ROpenStruct.new(JSON.parse(request))
+        rescue
+          raise UnprocessableEntityError
+        end
       end
 
       def headers
