@@ -35,8 +35,8 @@ class BattleshipApp
 
     private
       def self.socket_response(request, body)
-        method = request.respond_to?(:request_method) ? request.method : :unprocessable
-        url    = request.respond_to?(:url) ? request.url : :unprocessable
+        method = request.respond_to?(:headers) ? request.headers.method : :unprocessable
+        url    = request.respond_to?(:headers) ? request.headers.url : :unprocessable
 
         JSON.generate({
           headers: {

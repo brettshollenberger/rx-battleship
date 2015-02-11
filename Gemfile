@@ -3,6 +3,9 @@ source "https://rubygems.org"
 gem "sinatra"
 gem "faye-websocket"
 gem "puma"
+gem "activerecord", :require => "active_record"
+gem "mysql"
+gem "rake"
 
 group :development, :test do
   gem "pry"

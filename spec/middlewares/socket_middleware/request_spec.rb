@@ -12,7 +12,7 @@ describe BattleshipApp::SocketMiddleware::Request do
           "name" => "My Great Game"
         }
       }
-    })
+    }.to_json)
   end
 
   it "parses the request method" do

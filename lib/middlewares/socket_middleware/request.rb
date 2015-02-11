@@ -6,10 +6,6 @@ class BattleshipApp
       attr_accessor :request
 
       def initialize(request={})
-        if request.respond_to?(:to_json)
-          request = request.to_json
-        end
-
         begin
           @request = ROpenStruct.new(JSON.parse(request))
         rescue

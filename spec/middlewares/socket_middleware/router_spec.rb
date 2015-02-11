@@ -12,7 +12,7 @@ describe BattleshipApp::SocketMiddleware::Router do
           "name" => "My Great Game"
         }
       }
-    }
+    }.to_json
   end
 
   let(:create_game_request) do 
@@ -26,7 +26,7 @@ describe BattleshipApp::SocketMiddleware::Router do
           "name" => "My Great Game"
         }
       }
-    }
+    }.to_json
   end
 
   before(:all) do
@@ -49,8 +49,12 @@ describe BattleshipApp::SocketMiddleware::Router do
   end
 
   it "returns the results of the controller action" do
-    response = BattleshipApp::SocketMiddleware::Router.route(get_games_request)
+    response = ROpenStruct.new(
+                 JSON.parse(
+                   BattleshipApp::SocketMiddleware::Router.route(get_games_request)
+                 )
+    )
 
-    expect(response.game.name).to eq "My Great Game"
+    expect(response.body.game.name).to eq "My Great Game"
   end
 end
