@@ -1,0 +1,3 @@
+# Tasks
+
+NAME=migration_name rake db:generate_migration

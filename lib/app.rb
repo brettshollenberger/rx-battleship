@@ -1,4 +1,3 @@
-require "sinatra/base"
 require_relative "./config/application.rb"
 
 class BattleshipApp < Sinatra::Base
@@ -6,3 +5,5 @@ class BattleshipApp < Sinatra::Base
     erb :"index.html"
   end
 end
+
+Dir[File.expand_path(File.join(__FILE__, "../**/*.rb"))].each  { |f| require f }

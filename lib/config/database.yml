@@ -2,6 +2,8 @@ production:
   adapter: mysql
   host: 127.0.0.1
   database: rx_battleship_production
+  username: root
+  pool: 5
 
 development:
   adapter: mysql
@@ -14,3 +16,5 @@ test:
   adapter: mysql
   host: 127.0.0.1
   database: rx_battleship_test
+  username: root
+  pool: 5
