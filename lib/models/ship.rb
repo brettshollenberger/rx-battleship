@@ -4,6 +4,7 @@ class Ship < ActiveRecord::Base
   include MassInsertable
 
   belongs_to :board
+  has_many :squares
 
   class << self
     def types

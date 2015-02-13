@@ -3,6 +3,31 @@ require "active_support/concern"
 module SquaresList
   extend ActiveSupport::Concern
 
+  def set(ship, *squares)
+    squares.flatten!
+
+    if settable?(ship, *squares)
+      squares.each do |square|
+        square.update(ship: ship)
+      end
+    end
+  end
+
+  # True/false ship can be set at squares
+  def settable?(ship, *squares)
+    squares.flatten!
+
+    ship.length == squares.length &&
+      squares.all?(&:empty?) &&
+      contiguous?(squares)
+  end
+
+  def at(coordinates)
+    row(coordinates[:y]).select do |square|
+      square.x == coordinates[:x]
+    end.first
+  end
+
   def row(y)
     select do |square|
       square.y == y
@@ -10,7 +35,9 @@ module SquaresList
   end
 
   def column(x)
-    where(x: x)
+    select do |square|
+      square.x == x
+    end
   end
 
   # contiguous?(*squares)

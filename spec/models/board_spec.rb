@@ -62,4 +62,41 @@ describe Board do
   it "knows when any number of squares is horizontally contiguous" do
     expect(board.squares.contiguous?(board.squares.row(1))).to be true
   end
+
+  it "loads squares at a particular location" do
+    expect(board.squares.at(x: "A", y: 1)).to eq board.squares.first
+  end
+
+  it "allows a ship to be set in an empty set of contiguous squares the len of the ship" do
+    sq1 = board.squares.at(x: "A", y: 1)
+    sq2 = board.squares.at(x: "A", y: 2)
+    sq3 = board.squares.at(x: "A", y: 3)
+
+    submarine = board.ships.where(name: "submarine").first
+
+    expect(board.squares.settable?(submarine, sq1, sq2, sq3)).to be true
+  end
+
+  it "does not allow a ship at any taken squares" do
+    sq1 = board.squares.at(x: "A", y: 1)
+    sq2 = board.squares.at(x: "A", y: 2)
+    sq3 = board.squares.at(x: "A", y: 3)
+
+    submarine = board.ships.where(name: "submarine").first
+    destroyer = board.ships.where(name: "destroyer").first
+
+    board.squares.set(submarine, sq1, sq2, sq3)
+
+    expect(board.squares.settable?(destroyer, sq1, sq2, sq3)).to be false
+  end
+
+  it "does not allow a ship to be set at non-contiguous squares" do
+    sq1 = board.squares.at(x: "A", y: 1)
+    sq2 = board.squares.at(x: "A", y: 2)
+    sq4 = board.squares.at(x: "A", y: 4)
+
+    submarine = board.ships.where(name: "submarine").first
+
+    expect(board.squares.settable?(submarine, sq1, sq2, sq4)).to be false
+  end
 end
