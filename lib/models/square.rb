@@ -13,4 +13,22 @@ class Square < ActiveRecord::Base
   def empty?
     ship_id.nil?
   end
+  
+  def taken?
+    !empty?
+  end
+  
+  def state
+    if taken?
+      return "hit" if guessed?
+      return "taken"
+    else
+      return "miss" if guessed?
+      return "empty"
+    end
+  end
+
+  def guess
+    update(guessed: true)
+  end
 end
