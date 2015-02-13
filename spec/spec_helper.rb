@@ -1,3 +1,11 @@
+require 'rubygems'
+require 'bundler/setup'
 require_relative "../lib/app.rb"
 
-Dir[File.expand_path(File.join(__FILE__, "../support/**/*.rb"))].each { |f| require f }
+Bundler.setup("test", :ci)
+Bundler.require("test", :ci)
+
+# Load test & support files
+Rake::FileList.new("spec/support/**/*.rb", "spec/factories/**/*.rb").each do |f|
+  require File.expand_path(File.join(__FILE__, "../../#{f}"))
+end

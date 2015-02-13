@@ -17,4 +17,5 @@ group :test do
   gem "guard-rspec"
   gem "terminal-notifier"
   gem "terminal-notifier-guard"
+  gem "factory_girl"
 end
