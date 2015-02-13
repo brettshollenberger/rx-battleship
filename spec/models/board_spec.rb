@@ -1,7 +1,8 @@
 require "spec_helper"
 
 describe Board do
-  let(:board) { FactoryGirl.create(:board) }
+  let(:board)  { FactoryGirl.create(:board) }
+  let(:board2) { FactoryGirl.create(:board) }
 
   it "has 100 squares" do
     expect(board.squares.length).to eq 100
@@ -98,5 +99,15 @@ describe Board do
     submarine = board.ships.where(name: "submarine").first
 
     expect(board.squares.settable?(submarine, sq1, sq2, sq4)).to be false
+  end
+
+  it "does not allow a ship to be set at squares from different boards" do
+    sq1 = board.squares.at(x: "A", y: 1)
+    sq2 = board.squares.at(x: "A", y: 2)
+    sq3 = board2.squares.at(x: "A", y: 3)
+
+    submarine = board.ships.where(name: "submarine").first
+
+    expect(board.squares.settable?(submarine, sq1, sq2, sq3)).to be false
   end
 end

@@ -64,7 +64,8 @@ module SquaresList
   def contiguous?(*squares)
     squares.flatten!
 
-    vertically_contiguous?(*squares) || horizontally_contiguous?(*squares)
+    same_board?(*squares) &&
+      (vertically_contiguous?(*squares) || horizontally_contiguous?(*squares))
   end
 
   #   A B C D E
@@ -107,6 +108,10 @@ module SquaresList
 
   def same_column?(*squares)
     same_val?(*squares, :x)
+  end
+
+  def same_board?(*squares)
+    same_val?(*squares, :board_id)
   end
 
   # 1, 2, 3 => true
