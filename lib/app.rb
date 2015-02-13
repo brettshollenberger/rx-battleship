@@ -1,4 +1,4 @@
-require_relative "./config/application.rb"
+require_relative "../config/application.rb"
 
 class BattleshipApp < Sinatra::Base
   get "/" do

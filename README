@@ -1,3 +1,5 @@
 # Tasks
 
 NAME=migration_name rake db:generate_migration
+
+DATABASE_ENV=development rake db:migrate
