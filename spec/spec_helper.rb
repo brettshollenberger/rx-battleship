@@ -9,3 +9,10 @@ Bundler.require("test", :ci)
 Rake::FileList.new("spec/support/**/*.rb", "spec/factories/**/*.rb").each do |f|
   require File.expand_path(File.join(__FILE__, "../../#{f}"))
 end
+
+RSpec.configure do |config|
+  config.after(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+end

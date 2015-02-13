@@ -18,4 +18,5 @@ group :test do
   gem "terminal-notifier"
   gem "terminal-notifier-guard"
   gem "factory_girl"
+  gem "database_cleaner"
 end

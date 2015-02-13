@@ -62,4 +62,8 @@ describe Board do
   it "knows when any number of squares is horizontally contiguous" do
     expect(board.squares.contiguous?(board.squares.row(1))).to be true
   end
+
+  it "caches squares" do
+    expect(board.squares.cached)
+  end
 end
