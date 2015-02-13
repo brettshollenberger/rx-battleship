@@ -26,4 +26,40 @@ describe Board do
       expect(ship_names).to include name
     end
   end
+
+  it "knows when two squares are vertically contiguous" do
+    first, second = board.squares.first, board.squares.second
+
+    expect(board.squares.contiguous?(first, second)).to be true
+  end
+
+  it "knows when two squares are not vertically contiguous" do
+    first, third = board.squares.first, board.squares.third
+
+    expect(board.squares.contiguous?(first, third)).to be false
+  end
+
+  it "knows when five squares are vertically contiguous" do
+    expect(board.squares.contiguous?(board.squares[0..4])).to be true
+  end
+
+  it "knows when any number of squares are vertically contiguous" do
+    expect(board.squares.contiguous?(board.squares.column("A"))).to be true
+  end
+
+  it "knows when two squares are horizontally contiguous" do
+    first, eleventh = board.squares.first, board.squares[10]
+
+    expect(board.squares.contiguous?(first, eleventh)).to be true
+  end
+
+  it "knows when two squares are not horizontally contiguous" do
+    first, twenty_first = board.squares.first, board.squares[20]
+
+    expect(board.squares.contiguous?(first, twenty_first)).to be false
+  end
+
+  it "knows when any number of squares is horizontally contiguous" do
+    expect(board.squares.contiguous?(board.squares.row(1))).to be true
+  end
 end
