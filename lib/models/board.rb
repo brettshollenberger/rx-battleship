@@ -1,6 +1,7 @@
 class Board < ActiveRecord::Base
   has_many :squares
-  after_create :create_squares
+  has_many :ships
+  after_create :create_squares, :create_ships
 
 private
   def create_squares
@@ -8,6 +9,12 @@ private
       y_values.each do |y|
         squares.create(x: x, y: y)
       end
+    end
+  end
+
+  def create_ships
+    Ship.names.each do |name|
+      ships.create(name: name)
     end
   end
 

@@ -1,7 +1,5 @@
 FactoryGirl.define do
-  factory :square do
-    x "A"
-    y 1
+  factory :ship do
     association :board, :factory => :board
   end
 end
