@@ -4,6 +4,7 @@ class Board < ActiveRecord::Base
   has_many :squares do
     include ::SquaresList
   end
+
   has_many :ships
   after_create :create_squares, :create_ships
 
@@ -19,16 +20,20 @@ class Board < ActiveRecord::Base
 
 private
   def create_squares
-    Board.x_values.each do |x|
-      Board.y_values.each do |y|
-        squares.create(x: x, y: y)
-      end
+    Square.mass_insert do
+      Board.x_values.map do |x|
+        Board.y_values.map do |y|
+          {x: x, y: y, board_id: id}
+        end
+      end.flatten
     end
   end
 
   def create_ships
-    Ship.names.each do |name|
-      ships.create(name: name)
+    Ship.mass_insert do
+      Ship.names.map do |name|
+        {name: name, board_id: id}
+      end
     end
   end
 end

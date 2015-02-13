@@ -24,3 +24,11 @@ environments.each do |env|
   )
 end
 
+class BattleshipApp < Sinatra::Base 
+  class << self
+    def cache
+      @cache ||= Dalli::Client.new(['localhost:11211'],
+                :threadsafe => true, :failover => true, :expires_in => 300)
+    end
+  end
+end

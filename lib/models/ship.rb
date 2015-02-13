@@ -1,4 +1,8 @@
+require_relative "./concerns/mass_insertable"
+
 class Ship < ActiveRecord::Base
+  include MassInsertable
+
   belongs_to :board
 
   class << self

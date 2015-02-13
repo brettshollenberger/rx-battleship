@@ -4,7 +4,9 @@ module SquaresList
   extend ActiveSupport::Concern
 
   def row(y)
-    where(y: y)
+    select do |square|
+      square.y == y
+    end
   end
 
   def column(x)

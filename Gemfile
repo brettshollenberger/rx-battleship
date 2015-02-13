@@ -6,6 +6,7 @@ gem "puma"
 gem "activerecord", :require => "active_record"
 gem "mysql"
 gem "rake"
+gem "dalli"
 
 group :development, :test do
   gem "pry"
@@ -19,4 +20,5 @@ group :test do
   gem "terminal-notifier-guard"
   gem "factory_girl"
   gem "database_cleaner"
+  gem "db-query-matchers"
 end
